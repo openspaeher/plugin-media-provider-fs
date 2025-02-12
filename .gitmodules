@@ -1,0 +1,4 @@
+[submodule "wit"]
+	path = wit
+	url = ../wit.git
+	branch = main
