@@ -9,6 +9,9 @@ wit-bindgen-rt = { version = "0.39.0", features = ["bitflags"] }
 [dev-dependencies]
 cargo-component = "0.20.0"
 
+[lib]
+crate-type = ["cdylib"]
+
 [profile.release]
 codegen-units = 1
 opt-level = "s"

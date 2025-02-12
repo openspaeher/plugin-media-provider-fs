@@ -1,0 +1,5 @@
+package component:plugin-media-provider-fs;
+
+world plugin {
+    export test: func();
+}
