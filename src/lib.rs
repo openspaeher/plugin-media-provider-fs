@@ -7,10 +7,10 @@ struct FilesystemMediaProvider;
 
 impl Guest for FilesystemMediaProvider {
     fn add_root_folder(path: _rt::String) -> Result<RootFolder, Error> {
-        spaeher::core::logging::log_info("Log test");
-        spaeher::core::logging::log_err("Err test");
-        spaeher::core::media_provider_plugin_emit_events::emit_job_progress_event(
-            &spaeher::core::jobs::JobProgress {
+        spaeher::media_provider_plugin::logging::log_info("Log test");
+        spaeher::media_provider_plugin::logging::log_err("Err test");
+        spaeher::media_provider_plugin::emit_events::emit_job_progress_event(
+            &spaeher::media_provider_plugin::emit_events::JobProgress {
                 id: "some-id".to_string(),
                 total_children: None,
                 finished_children: None,
