@@ -1,6 +1,6 @@
 wit_bindgen::generate!({
-    path: "wit",
-    world: "media-provider-plugin"
+    path: "wit/media-provider.wit",
+    world: "media-provider-plugin-world"
 });
 
 struct FilesystemMediaProvider;
