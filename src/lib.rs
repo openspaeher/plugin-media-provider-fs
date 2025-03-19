@@ -3,7 +3,7 @@ use std::sync::{Arc, RwLock};
 use serde::{Deserialize, Serialize};
 
 wit_bindgen::generate!({
-    path: "wit/media-provider/media-provider.wit",
+    path: "wit/contract.wit",
     world: "media-provider-plugin-world"
 });
 
@@ -29,6 +29,10 @@ impl Guest for FilesystemMediaProvider {
             relative_path: "".to_string(),
             duration: None,
         });
+        return Result::Err(Error::NotImplemented);
+    }
+
+    fn on_config_changed(action_id:_rt::String,) -> Result<(),Error> {
         return Result::Err(Error::NotImplemented);
     }
 }
