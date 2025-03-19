@@ -122,7 +122,7 @@ impl Guest for FilesystemMediaProvider {
                 })
                 .unwrap_or(false)
         {
-            Ok(urlencoding::encode(&path_str).to_string())
+            Ok(path_str)
         } else {
             Err(Error::PathInvalid(format!(
                 "Path '{}' is not valid, or the file is not a supported file type.",
