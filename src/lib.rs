@@ -36,6 +36,7 @@ impl Guest for FilesystemMediaProvider {
             .map_err(|_| Error::ConfigInvalid("Failed to acquire read lock".to_string()))?
             .clone()
             .ok_or(Error::ConfigInvalid("Config not initialized".to_string()))?;
+
         let base_path =
             PathBuf::from_str(&base_path_str).map_err(|e| Error::PathInvalid(e.to_string()))?;
         let mut total_indexed_files = 0u32;
@@ -100,6 +101,22 @@ impl Guest for FilesystemMediaProvider {
             .map_err(|_| Error::ConfigInvalid("Failed to acquire write lock".to_string()))?
             .replace(config);
         return Ok(());
+    }
+    
+    fn get_streamable_url(path: String, _action_id: String,) -> Result<String,Error> {
+        let config = CONFIG
+            .read()
+            .map_err(|_| Error::ConfigInvalid("Failed to acquire read lock".to_string()))?
+            .clone()
+            .ok_or(Error::ConfigInvalid("Config not initialized".to_string()))?;
+
+        let path = Path::new(&path);
+        let path_str = path.to_string_lossy().to_string();
+        if path.exists() && path.extension().map(|ext| config.file_extensions.contains(&ext.to_string_lossy().to_string())).unwrap_or(false) {
+            Ok(urlencoding::encode(&path_str).to_string())
+        } else {
+            Err(Error::PathInvalid(format!("Path '{}' is not valid, or the file is not a supported file type.", path_str)))
+        }
     }
 }
 
