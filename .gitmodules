@@ -1,4 +1,0 @@
-[submodule "wit"]
-	path = wit
-	url = ../contract-media-provider.git
-	branch = main
