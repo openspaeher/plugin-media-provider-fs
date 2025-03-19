@@ -6,7 +6,7 @@ use std::{
 
 use glob::glob;
 use serde::{Deserialize, Serialize};
-use spaeher::media_provider_plugin::logging::log_warn;
+use spaeher::media_provider_plugin::{logging::log_warn, media_provider::{emit_indexed_file_event, File}};
 
 wit_bindgen::generate!({
     path: "wit/contract.wit",
