@@ -4,9 +4,12 @@ use std::{
     sync::{Arc, RwLock},
 };
 
-use glob::glob;
+use ignore::WalkBuilder;
 use serde::{Deserialize, Serialize};
-use spaeher::media_provider_plugin::{logging::log_warn, media_provider::{emit_indexed_file_event, File}};
+use spaeher::media_provider_plugin::{
+    logging::log_warn,
+    media_provider::{emit_indexed_file_event, File},
+};
 
 wit_bindgen::generate!({
     path: "wit/contract.wit",
@@ -36,54 +39,51 @@ impl Guest for FilesystemMediaProvider {
         let base_path =
             PathBuf::from_str(&base_path_str).map_err(|e| Error::PathInvalid(e.to_string()))?;
         let mut total_indexed_files = 0u32;
-        let glob_pattern = format!(
-            "{}/**/*.{{{}}}",
-            &base_path_str,
-            config
-                .file_extensions
-                .iter()
-                .map(|e| format!(".{}", e))
-                .collect::<Vec<String>>()
-                .join(",")
-        );
-        for entry in glob(&glob_pattern).map_err(|e| Error::PathInvalid(e.to_string()))? {
-            let Ok(entry) = entry else {
-                continue;
-            };
-            if entry.is_dir() {
-                continue;
-            }
-            let Some(Some(file_name)) = entry.file_name().map(|f| f.to_str()) else {
-                log_warn(&format!(
-                    "Failed to convert file name to string: {:?}",
-                    entry.file_name()
-                ));
-                continue;
-            };
-            let Ok(relative_path) = Path::strip_prefix(&entry, base_path.clone()) else {
-                log_warn(&format!(
-                    "Failed to compute relative path for path: {:?}",
-                    entry
-                ));
-                continue;
-            };
-            let Some(relative_path_str) = relative_path.to_str() else {
-                log_warn(&format!(
-                    "Failed to convert relative path to string: {:?}",
-                    relative_path
-                ));
-                continue;
-            };
-            emit_indexed_file_event(
-                &File {
-                    name: file_name.to_string(),
-                    relative_path: relative_path_str.to_string(),
-                    duration: None,
-                },
-                &action_id,
-            );
-            total_indexed_files += 1;
-        }
+
+        WalkBuilder::new(base_path_str)
+            .hidden(false)
+            .parents(false)
+            .ignore(false)
+            .git_ignore(false)
+            .git_global(false)
+            .git_exclude(false)
+            .follow_links(false)
+            .build()
+            .filter_map(Result::ok)
+            .filter(|entry| {
+                entry.path().is_file()
+                    && entry
+                        .path()
+                        .extension()
+                        .map(|ext| {
+                            config
+                                .file_extensions
+                                .contains(&ext.to_string_lossy().to_string())
+                        })
+                        .unwrap_or(false)
+            })
+            .for_each(|entry| {
+                match Path::strip_prefix(&entry.clone().into_path(), base_path.clone()) {
+                    Ok(relative_path) => {
+                        emit_indexed_file_event(
+                            &File {
+                                name: entry.file_name().to_string_lossy().to_string(),
+                                relative_path: relative_path.to_string_lossy().to_string(),
+                                duration: None,
+                            },
+                            &action_id,
+                        );
+                        total_indexed_files += 1;
+                    }
+                    Err(_) => {
+                        log_warn(&format!(
+                            "Failed to compute relative path for path: {:?}",
+                            entry
+                        ));
+                        return;
+                    }
+                }
+            });
         return Result::Ok(total_indexed_files);
     }
 
