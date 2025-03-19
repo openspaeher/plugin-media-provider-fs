@@ -102,8 +102,8 @@ impl Guest for FilesystemMediaProvider {
             .replace(config);
         return Ok(());
     }
-    
-    fn get_streamable_url(path: String, _action_id: String,) -> Result<String,Error> {
+
+    fn get_streamable_url(path: String, _action_id: String) -> Result<String, Error> {
         let config = CONFIG
             .read()
             .map_err(|_| Error::ConfigInvalid("Failed to acquire read lock".to_string()))?
@@ -112,10 +112,22 @@ impl Guest for FilesystemMediaProvider {
 
         let path = Path::new(&path);
         let path_str = path.to_string_lossy().to_string();
-        if path.exists() && path.extension().map(|ext| config.file_extensions.contains(&ext.to_string_lossy().to_string())).unwrap_or(false) {
+        if path.exists()
+            && path
+                .extension()
+                .map(|ext| {
+                    config
+                        .file_extensions
+                        .contains(&ext.to_string_lossy().to_string())
+                })
+                .unwrap_or(false)
+        {
             Ok(urlencoding::encode(&path_str).to_string())
         } else {
-            Err(Error::PathInvalid(format!("Path '{}' is not valid, or the file is not a supported file type.", path_str)))
+            Err(Error::PathInvalid(format!(
+                "Path '{}' is not valid, or the file is not a supported file type.",
+                path_str
+            )))
         }
     }
 }
