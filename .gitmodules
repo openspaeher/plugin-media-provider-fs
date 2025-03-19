@@ -1,0 +1,4 @@
+[submodule "wit"]
+	path = wit
+	url = https://github.com/openspaeher/contract-media-provider.git
+	branch = main
