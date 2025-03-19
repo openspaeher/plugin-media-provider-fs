@@ -103,7 +103,7 @@ impl Guest for FilesystemMediaProvider {
         return Ok(());
     }
 
-    fn get_streamable_url(path: String, _action_id: String) -> Result<String, Error> {
+    fn get_streamable_url(path: String, _action_id: String) -> Result<StreamableUrl, Error> {
         let config = CONFIG
             .read()
             .map_err(|_| Error::ConfigInvalid("Failed to acquire read lock".to_string()))?
@@ -122,7 +122,10 @@ impl Guest for FilesystemMediaProvider {
                 })
                 .unwrap_or(false)
         {
-            Ok(path_str)
+            Ok(StreamableUrl {
+                url: path_str,
+                is_local: true
+            })
         } else {
             Err(Error::PathInvalid(format!(
                 "Path '{}' is not valid, or the file is not a supported file type.",
