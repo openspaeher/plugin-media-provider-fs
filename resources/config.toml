@@ -1,8 +1,1 @@
-[[options]]
-id = "file-extensions"
-name = "File Extensions"
-description = "The file extensions that should be indexed."
-type = "multi-select"
-optional = false
-options = ["mp3", "mp4", "mkv", "avi", "flac", "wav", "webm"] # TODO: add more
-default = ["mp3", "mp4", "mkv", "avi", "flac", "wav", "webm"]
+file_extensions = ["mp3", "mp4", "mkv", "avi", "flac", "wav", "webm"]

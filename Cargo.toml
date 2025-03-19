@@ -3,13 +3,12 @@ name = "plugin-media-provider-fs"
 version = "0.1.0"
 edition = "2021"
 
-[build-dependencies]
-spaeher-contracts = {git = "https://github.com/openspaeher/lib-contracts.git"}
-semver = "1.0.25"
-
 [dependencies]
 wit-bindgen = { version = "0.39.0" }
 rusqlite = { version = "0.33.0" }
+lazy_static = "1.5.0"
+serde = {version = "1.0.219", features = ["derive"]}
+toml = "0.8.20"
 
 [lib]
 path = "src/lib.rs"
