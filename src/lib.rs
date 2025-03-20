@@ -30,14 +30,19 @@ lazy_static::lazy_static! {
 struct FilesystemMediaProvider;
 
 impl Guest for FilesystemMediaProvider {
-    fn index_path(request: IndexPathRequest, action_id: String) -> Result<IndexPathResponse, Error> {
+    fn index_path(
+        request: IndexPathRequest,
+        action_id: String,
+    ) -> Result<IndexPathResponse, Error> {
         let config = CONFIG
             .read()
             .map_err(|_| Error::ConfigInvalid("Failed to acquire read lock".to_string()))?
             .clone()
             .ok_or(Error::ConfigInvalid("Config not initialized".to_string()))?;
         let IndexPathRequest::IndexPath(base_path_str) = request else {
-            return Result::Err(Error::ResumableInvalid("This plugin doesn't use resumables.".to_string()));
+            return Result::Err(Error::ResumableInvalid(
+                "This plugin doesn't use resumables.".to_string(),
+            ));
         };
 
         let base_path =
@@ -74,7 +79,7 @@ impl Guest for FilesystemMediaProvider {
                                 name: entry.file_name().to_string_lossy().to_string(),
                                 relative_path: relative_path.to_string_lossy().to_string(),
                                 duration: None,
-                                metadata: vec![]
+                                metadata: vec![],
                             },
                             &action_id,
                         );
@@ -128,7 +133,7 @@ impl Guest for FilesystemMediaProvider {
         {
             Ok(StreamableUrl {
                 url: path_str,
-                is_local: true
+                is_local: true,
             })
         } else {
             Err(Error::PathInvalid(format!(
