@@ -1,0 +1,3 @@
+id = "media-provider-filesystem"
+contract_id = "media-provider"
+contract_version = "%VERSION%"
