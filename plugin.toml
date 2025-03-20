@@ -1,3 +1,4 @@
 id = "media-provider-filesystem"
+arch = "wasm/wasm"
 contract_id = "media-provider"
 contract_version = "%VERSION%"
